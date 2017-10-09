@@ -7,6 +7,8 @@ Install DataSpaces, Xerces and OpenCV libraries
 
 Update Makefile with the proper library paths 
 
+Define network parameters and layers in network.xml
+
 Run make
 
 Run ./run_script.sh
