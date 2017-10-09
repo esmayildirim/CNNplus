@@ -1,0 +1,112 @@
+
+#OPENCV_INC=-I/usr/local/Cellar/opencv/include/opencv/2.4.12/include -I/usr/local/Cellar/opencv/2.4.12/include
+#OPENCV_LIB=-L/usr/local/Cellar/opencv/2.4.12/lib -lopencv_calib3d -lopencv_contrib -lopencv_core -lopencv_features2d -lopencv_flann -lopencv_gpu -lopencv_highgui -lopencv_imgproc -lopencv_legacy -lopencv_ml -lopencv_nonfree -lopencv_objdetect -lopencv_ocl -lopencv_photo -lopencv_stitching -lopencv_superres -lopencv_ts -lopencv_video -lopencv_videostab
+
+OPENCV_INC=-I/usr/local/Cellar/opencv-3.1/include
+OPENCV_LIB=-L/usr/local/Cellar/opencv-3.1/lib -lopencv_calib3d  -lopencv_core -lopencv_features2d -lopencv_flann  -lopencv_highgui -lopencv_imgproc  -lopencv_ml  -lopencv_objdetect  -lopencv_photo -lopencv_stitching -lopencv_superres -lopencv_ts -lopencv_video -lopencv_videostab -lopencv_plot
+
+OMP_LIB=-L/usr/local/Cellar/libiomp/20150701/lib/ -liomp5
+OMP_INC=-I/usr/local/Cellar/libiomp/20150701/include/libiomp/
+#OMP_LIB=-fopenmp
+OPENSLIDE_LIB=-L/usr/local/lib -lopenslide
+OPENSLIDE_INC=-I/usr/local/include/openslide
+GLIB_INC=-I/usr/local/Cellar/glib/2.44.1/include/glib-2.0 -I/usr/local/Cellar/glib/2.44.1/lib/glib-2.0/include -I/usr/local/opt/gettext/include
+
+DATASPACES_LIB=-L/Users/eyildirim/Documents/ds_install/lib -ldspaces -ldscommon -ldart -lm
+DATASPACES_INC=-I/Users/eyildirim/Documents/ds_install/include
+
+CC=mpicxx
+
+all: executable wsi_reader visualize
+
+#executable:read_image.o preprocess.o weight_init.o weight_init2.o convolution.o activation.o pooling.o fully_connected.o dspaces_io.o breast_cancer_data.o loss_function.o back_propagation.o  parameter_update.o main.o
+#	$(CC) -o $@ $^ $(DATASPACES_LIB) $(OPENCV_LIB) $(OMP_LIB) $(OPENJPEG_LIB) $(LIBTIFF_LIB) 
+
+executable:back_prop_DP.o read_image.o conv_utility.o preprocess.o weight_init2.o convolution.o activation.o pooling.o fully_connected.o dspaces_io.o breast_cancer_data.o loss_function.o  parameter_update_DP.o conv_layer.o 
+	$(CC) -o $@ $^ $(DATASPACES_LIB) $(OPENCV_LIB) $(OMP_LIB) $(OPENJPEG_LIB) $(LIBTIFF_LIB) $(OPENSLIDE_LIB)
+
+
+visualize:visualize.o
+	$(CC) -o $@ $^  $(OPENCV_LIB) $(OPENJPEG_LIB) $(LIBTIFF_LIB)
+
+wsi_reader: wsi_reader_coord.o 
+	$(CC) -o $@ $^ $(DATASPACES_LIB) $(OPENCV_LIB) $(OMP_LIB) $(OPENJPEG_LIB) $(LIBTIFF_LIB) $(OPENSLIDE_LIB)
+
+
+
+threshold:threshold.o
+	$(CC) -o $@ $^ $(DATASPACES_LIB) $(OPENCV_LIB) $(OMP_LIB) $(OPENJPEG_LIB) $(LIBTIFF_LIB) $(OPENSLIDE_LIB)
+
+wsi_reader_coord.o:wsi_reader_coord.cpp
+	$(CC) -c wsi_reader_coord.cpp $(DATASPACES_INC) $(OPENCV_INC) $(OMP_INC) $(GLIB_INC) $(OPENSLIDE_INC)
+
+visualize.o:visualize.cpp
+	$(CC) -c visualize.cpp $(OPENCV_INC)
+
+threshold.o:threshold.cpp
+	$(CC) -c threshold.cpp $(DATASPACES_INC) $(OPENCV_INC) $(OMP_INC) $(GLIB_INC) $(OPENSLIDE_INC)
+
+conv_layer.o:conv_layer.cpp
+	$(CC) -c conv_layer.cpp $(DATASPACES_INC) $(OPENSLIDE_INC) $(OPENCV_INC) $(OMP_INC) $(GLIB_INC)
+
+
+read_image.o:read_image.cpp
+	$(CC) -c read_image.cpp $(OPENCV_INC)
+
+conv_utility.o:conv_utility.cpp
+	$(CC) -c conv_utility.cpp 
+
+preprocess.o:preprocess.cpp
+	$(CC) -c preprocess.cpp $(OMP_INC) $(OPENCV_INC)
+
+weight_init.o:weight_init.cpp
+	$(CC) -c weight_init.cpp $(OPENCV_INC)
+
+weight_init2.o:weight_init2.cpp
+	$(CC) -c weight_init2.cpp $(OPENCV_INC)
+
+convolution.o:convolution.cpp
+	$(CC) -c convolution.cpp $(OPENCV_INC)
+
+activation.o:activation.cpp
+	$(CC) -c activation.cpp
+
+pooling.o:pooling.cpp
+	$(CC) -c pooling.cpp
+
+fully_connected.o:fully_connected.cpp
+	$(CC) -c fully_connected.cpp $(DATASPACES_INC)
+
+dspaces_io.o:dspaces_io.cpp
+	$(CC) -c dspaces_io.cpp $(DATASPACES_INC) $(OPENSLIDE_INC) $(OPENCV_INC) $(OMP_INC)
+
+loss_function.o:loss_function.cpp
+	$(CC) -c loss_function.cpp $(DATASPACES_INC)
+
+
+breast_cancer_data.o:breast_cancer_data.cpp
+	$(CC) -c breast_cancer_data.cpp
+
+back_propagation.o:back_propagation.cpp
+	$(CC) -c back_propagation.cpp
+
+back_prop_DP.o:back_prop_DP.cpp
+	$(CC) -c back_prop_DP.cpp $(DATASPACES_INC)
+
+parameter_update_DP.o:parameter_update_DP.cpp
+	$(CC) -c parameter_update_DP.cpp $(DATASPACES_INC)
+
+pattern.o:pattern.cpp
+	$(CC) -c pattern.cpp $(DATASPACES_INC)
+
+main.o:main.cpp
+	$(CC) -c main.cpp $(DATASPACES_INC) $(OPENCV_INC) $(OMP_INC) $(GLIB_INC)
+
+
+
+.PHONY:clean
+
+clean:
+	rm -f *.o
+
+

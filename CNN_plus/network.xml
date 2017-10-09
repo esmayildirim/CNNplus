@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="LATIN1"?>
+<network>
+	<layer id="input1" act_func="false">
+		<type subtype="mnist">input</type>
+	</layer>
+	<layer id="conv1" act_func="true">
+		<type>conv</type>
+		<maps>4</maps>
+		<stride>1</stride>
+        <filter_size>5</filter_size>
+		<padding>true</padding>
+		<pred_id>input1</pred_id>
+		<weight_id>conv1-w</weight_id>
+		<bias_id>conv1-b</bias_id>
+	</layer>
+    <layer id="pool1" act_func="false">
+        <type>pool</type>
+        <maps>4</maps>
+        <op>max</op>
+        <stride>2</stride>
+        <pool_size>2</pool_size>
+        <pred_id>conv1</pred_id>
+    </layer>
+    <layer id="conv2" act_func="true">
+        <type>conv</type>
+        <maps>8</maps>
+        <stride>1</stride>
+        <filter_size>5</filter_size>
+        <padding>true</padding>
+        <pred_id>pool1</pred_id>
+        <weight_id>conv2-w</weight_id>
+        <bias_id>conv2-b</bias_id>
+    </layer>
+    <layer id="pool2" act_func="false">
+        <type>pool</type>
+        <maps>8</maps>
+        <op>max</op>
+        <stride>2</stride>
+        <pool_size>2</pool_size>
+        <pred_id>conv2</pred_id>
+    </layer>
+    <layer id="fc1" act_func="true">
+        <type>fc</type>
+        <nodes>32</nodes>
+        <pred_id>pool2</pred_id>
+        <weight_id>fc1-w</weight_id>
+        <bias_id>fc1-b</bias_id>
+    </layer>
+    <layer id="fc2" act_func="false">
+        <type>fc</type>
+        <nodes>2</nodes>
+        <pred_id>fc1</pred_id>
+        <weight_id>fc2-w</weight_id>
+        <bias_id>fc2-b</bias_id>
+    </layer>
+    <layer id="output" act_func="false">
+        <type>softmax</type>
+        <nodes>2</nodes>
+        <pred_id>fc2</pred_id>
+    </layer>
+</network>
